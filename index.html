@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NEOGEN AI - Generator Visual</title>
+    <meta name="theme-color" content="#050510">
+    <meta name="description" content="Generator Gambar AI Pendidikan, Komik, dan Hobi.">
+    
+    <!-- PWA MANIFEST (Inline Data URI) -->
+    <link rel="manifest" href='data:application/manifest+json;base64,ewogICJuYW1lIjogIk5FT0dFTiBBSSIsCiAgInNob3J0X25hbWUiOiAiTkVPR0VOIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwNTA1MTAiLAogICJ0aGVtZV9jb2xvciI6ICIjMDA1N2ZmIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9hcGkuaWNvbmlmeS5jb20vdjIvZW1vamlzLzdmMzY5YmUzLWFjYTctNDZiMS1hMGIyLTBjZmQ1ZTc5YmY5NS5zdmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9'>
+    <link rel="apple-touch-icon" href="https://api.iconify.design/mdi:robot-excited.svg?color=%2300d4ff">
+
+    <style>
+        /* --- CORE FUTURISTIC STYLES --- */
+        :root {
+            --bg-dark: #050510;
+            --panel-bg: rgba(20, 20, 35, 0.7);
+            --primary: #00d4ff; /* Cyan Neon */
+            --secondary: #b026ff; /* Purple Neon */
+            --text-main: #e0e0e0;
+            --text-muted: #8888aa;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(176, 38, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 212, 255, 0.15) 0%, transparent 40%);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px;
+            background: rgba(10, 10, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: white;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 10px var(--primary);
+        }
+        
+        .logo svg { width: 32px; height: 32px; fill: var(--primary); }
+
+        .nav-menu { list-style: none; flex: 1; }
+        .nav-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 212, 255, 0.1), transparent);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+
+        .settings-box {
+            border-top: var(--glass-border);
+            padding-top: 15px;
+            font-size: 12px;
+        }
+        .settings-box label { display: block; margin-bottom: 5px; color: var(--text-muted); }
+        .api-input {
+            width: 100%;
+            background: #000;
+            border: 1px solid #333;
+            color: var(--primary);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .top-bar {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: var(--glass-border);
+            background: rgba(5, 5, 16, 0.8);
+        }
+
+        .burger { display: none; cursor: pointer; font-size: 24px; color: white; }
+
+        .workspace {
+            display: flex;
+            flex-wrap: wrap;
+            height: calc(100vh - 60px);
+        }
+
+        /* --- CONTROLS PANEL --- */
+        .controls {
+            width: 350px;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: var(--glass-border);
+            background: rgba(0,0,0,0.2);
+        }
+
+        .control-group { margin-bottom: 20px; }
+        .control-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--secondary); text-transform: uppercase; }
+        
+        textarea, input[type="text"], select {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            transition: 0.3s;
+        }
+        textarea:focus, input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 8px rgba(0, 212, 255, 0.2); }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5); }
+        .btn-secondary { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); }
+        .btn-secondary:hover { border-color: white; color: white; }
+
+        .toggles { display: flex; gap: 10px; margin-bottom: 15px; }
+        .toggle-btn {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted);
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .toggle-btn.active { background: rgba(0, 212, 255, 0.2); color: var(--primary); border-color: var(--primary); }
+
+        /* --- PREVIEW AREA --- */
+        .preview-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: radial-gradient(#1a1a2e 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+        }
+
+        .canvas-container {
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            max-width: 100%;
+            max-height: 80vh;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas { max-width: 100%; max-height: 100%; display: block; }
+        
+        .status-bar {
+            margin-top: 15px;
+            font-size: 13px;
+            color: var(--text-muted);
+            min-height: 20px;
+            text-align: center;
+        }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: -280px; height: 100%; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
+            .sidebar.open { left: 0; }
+            .burger { display: block; }
+            .workspace { flex-direction: column; overflow-y: auto; height: auto; }
+            .controls { width: 100%; border-right: none; border-bottom: var(--glass-border); }
+            .preview-area { min-height: 400px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+        <div class="logo">
+            <svg viewBox="0 0 24 24">
+                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" />
+            </svg>
+            NEOGEN AI
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item active" onclick="switchMode('home')">🏠 Studio Utama</li>
+            <li class="nav-item" onclick="switchMode('edu')">🎓 Pendidikan</li>
+            <li class="nav-item" onclick="switchMode('comic')">📚 Pembuat Komik</li>
+            <li class="nav-item" onclick="switchMode('hobby')">🎮 Hobi & RPG</li>
+        </ul>
+        <div class="settings-box">
+            <label>⚙️ Pilih Mesin AI</label>
+            <select id="engine-select" onchange="toggleApiInput()" style="margin-bottom:10px;">
+                <option value="pollinations">Pollinations (Gratis/No Key)</option>
+                <option value="huggingface">Hugging Face (Butuh Key)</option>
+            </select>
+
+            <div id="hf-key-container" style="display:none;">
+                <label>🔑 Hugging Face API Key</label>
+                <input type="text" id="hf-api-key" class="api-input" placeholder="Tempel hf_xxxxx..." onchange="saveSettings()">
+            </div>
+            
+            <div style="margin-top:10px; font-size:10px; color:#555;">Pollinations: Instan & Gratis.<br>Hugging Face: Kualitas tinggi, butuh key.</div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="burger" onclick="toggleSidebar()">☰</div>
+            <h3 id="page-title" style="margin:0; font-weight:300;">STUDIO UTAMA</h3>
+            <div style="width:24px;"></div> <!-- Spacer -->
+        </div>
+
+        <div class="workspace">
+            <!-- CONTROLS -->
+            <div class="controls">
+                <!-- Prompt Input -->
+                <div class="control-group">
+                    <label>Idemu Apa?</label>
+                    <textarea id="prompt-input" rows="3" placeholder="Deskripsikan imajinasimu... (cth: Kucing cyberpunk duduk di atap neon)"></textarea>
+                </div>
+
+                <!-- Styles -->
+                <div class="control-group">
+                    <label>Gaya Visual (Preset)</label>
+                    <select id="style-select">
+                        <option value="none">Umum / Tanpa Gaya</option>
+                        <option value="manga">Manga / Anime</option>
+                        <option value="retro">Poster Retro 80an</option>
+                        <option value="vector">Vektor Datar / Infografis</option>
+                        <option value="3d">3D Realistis</option>
+                        <option value="pixel">Pixel Art</option>
+                        <option value="watercolor">Cat Air</option>
+                    </select>
+                </div>
+
+                <!-- Text Overlay (Canvas Feature) -->
+                <div class="control-group">
+                    <label>Teks Overlay (Judul/Caption)</label>
+                    <input type="text" id="overlay-text" placeholder="Ketik teks yang muncul di gambar...">
+                </div>
+
+                <!-- Toggles -->
+                <div class="control-group">
+                    <label>Peningkat Kualitas</label>
+                    <div class="toggles">
+                        <div class="toggle-btn" id="btn-enhance" onclick="toggleFeature('enhance')">✨ Magic Enhancer</div>
+                        <div class="toggle-btn" id="btn-clean" onclick="toggleFeature('clean')">🧹 Anti-Buram</div>
+                    </div>
+                </div>
+
+                <!-- Negative Prompt Manual -->
+                <div class="control-group">
+                    <label>Hindari Ini (Negative Prompt)</label>
+                    <textarea id="neg-prompt" rows="2" placeholder="buram, jelek, anatasi salah..."></textarea>
+                </div>
+
+                <!-- Actions -->
+                <button class="btn btn-primary" onclick="generateImage()">BUAT VISUAL</button>
+                <button class="btn btn-secondary" onclick="downloadCanvas()">💾 Unduh Hasil</button>
+            </div>
+
+            <!-- PREVIEW -->
+            <div class="preview-area">
+                <div class="canvas-container">
+                    <canvas id="mainCanvas" width="800" height="600"></canvas>
+                </div>
+                <div class="status-bar" id="status-text">Siap membuat karya.</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- STATE & VARIABLES ---
+        let apiKey = localStorage.getItem('neogen_hf_key') || '';
+        document.getElementById('hf-api-key').value = apiKey;
+
+        let features = {
+            enhance: false,
+            clean: false
+        };
+
+        // Kamus Gaya
+        const styleDict = {
+            'none': '',
+            'manga': ', gaya anime, manga, warna cerah, garis detail, cel shading',
+            'retro': ', poster retro 80an, vintage, warna neon, estetika synthwave, grain',
+            'vector': ', seni vektor datar, minimalis, gaya infografis, garis bersih, warna solid',
+            '3d': ', render 3d, unreal engine 5, octane render, fotorealistik, pencahayaan volumetrik',
+            'pixel': ', seni pixel, 16-bit, gaya game retro',
+            'watercolor': ', lukisan cat air, artistik, tepi lembut, warna pastel'
+        };
+
+        const negativeDefaults = "buram, jelek, terdistorsi, kualitas rendah, anatomi buruk, anggota tubuh ekstra, watermark, teks";
+
+        // --- NAVIGASI & UI ---
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function toggleApiInput() {
+            const engine = document.getElementById('engine-select').value;
+            const hfContainer = document.getElementById('hf-key-container');
+            if (engine === 'huggingface') {
+                hfContainer.style.display = 'block';
+            } else {
+                hfContainer.style.display = 'none';
+            }
+        }
+
+        function switchMode(mode) {
+            // Update Menu
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Update Judul & Default Style
+            const titleEl = document.getElementById('page-title');
+            const styleEl = document.getElementById('style-select');
+
+            if(mode === 'home') {
+                titleEl.innerText = "STUDIO UTAMA";
+                styleEl.value = 'none';
+            } else if (mode === 'edu') {
+                titleEl.innerText = "LAB PENDIDIKAN";
+                styleEl.value = 'vector'; 
+                document.getElementById('prompt-input').placeholder = "Contoh: Diagram proses fotosintesis, latar putih bersih...";
+            } else if (mode === 'comic') {
+                titleEl.innerText = "STUDIO KOMIK";
+                styleEl.value = 'manga'; 
+                document.getElementById('prompt-input').placeholder = "Contoh: Aksi superhero dinamis, terbang di kota...";
+            } else if (mode === 'hobby') {
+                titleEl.innerText = "HOBI & RPG";
+                styleEl.value = '3d'; 
+                document.getElementById('prompt-input').placeholder = "Contoh: Prajurit elf fantasi dengan pedang bersinar, baju zirah epik...";
+            }
+
+            if(window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+
+        function toggleFeature(feat) {
+            features[feat] = !features[feat];
+            const btnId = feat === 'enhance' ? 'btn-enhance' : 'btn-clean';
+            const btn = document.getElementById(btnId);
+            
+            if(features[feat]) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+
+        function saveSettings() {
+            const key = document.getElementById('hf-api-key').value.trim();
+            localStorage.setItem('neogen_hf_key', key);
+            apiKey = key;
+            alert("API Key tersimpan!");
+        }
+
+        // --- CORE GENERATION LOGIC (DIPERBAIKI) ---
+        async function generateImage() {
+            const engine = document.getElementById('engine-select').value;
+
+            // Cek API Key jika pakai HF
+            if (engine === 'huggingface' && !apiKey) {
+                alert("Untuk mesin Hugging Face, kamu wajib memasukkan API Key di sidebar!");
+                return;
+            }
+
+            const rawPrompt = document.getElementById('prompt-input').value;
+            if(!rawPrompt) {
+                alert("Silakan tulis ide gambar dulu bro!");
+                return;
+            }
+
+            // 1. Bangun Prompt
+            let finalPrompt = rawPrompt;
+            
+            // Tambah Gaya
+            const styleVal = document.getElementById('style-select').value;
+            if(styleDict[styleVal]) {
+                finalPrompt += styleDict[styleVal];
+            }
+
+            // Tambah Magic Enhancer
+            if(features.enhance) {
+                finalPrompt += ", resolusi tinggi, 8k, mahakarya, pencahayaan sinematik, fokus tajam, sangat detail";
+            }
+
+            // 2. Bangun Negative Prompt
+            let negPrompt = document.getElementById('neg-prompt').value;
+            if(features.clean) {
+                if(negPrompt) negPrompt += ", " + negativeDefaults;
+                else negPrompt = negativeDefaults;
+            }
+
+            // Update UI
+            const statusEl = document.getElementById('status-text');
+            const canvas = document.getElementById('mainCanvas');
+            const ctx = canvas.getContext('2d');
+            const overlayText = document.getElementById('overlay-text').value;
+
+            // Bersihkan Canvas & Tampilkan Loading
+            ctx.fillStyle = "#111";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#00d4ff";
+            ctx.font = "20px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("MEMPROSES...", canvas.width/2, canvas.height/2);
+
+            try {
+                if (engine === 'pollinations') {
+                    // --- LOGIKA POLLINATIONS (Direct URL Load) ---
+                    // Pollinations menerima prompt lewat URL parameter
+                    // Tambahkan random seed agar gambar beda tiap klik
+                    const seed = Math.floor(Math.random() * 100000);
+                    const encodedPrompt = encodeURIComponent(finalPrompt);
+                    const imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&nologo=true&seed=${seed}&model=flux`; // Flux model bagus
+                    
+                    const img = new Image();
+                    img.crossOrigin = "Anonymous"; 
+                    img.src = imgUrl;
+
+                    img.onload = () => drawToCanvas(img, canvas, ctx, overlayText, statusEl);
+                    img.onerror = () => {
+                        statusEl.innerText = "Gagal memuat gambar dari Pollinations.";
+                    };
+
+                } else {
+                    // --- LOGIKA HUGGING FACE (Fetch API) ---
+                    statusEl.innerText = "Menghubungi Hugging Face (tunggu sebentar)...";
+                    
+                    const modelId = "stabilityai/stable-diffusion-xl-base-1.0";
+                    const response = await fetch(`https://api-inference.huggingface.co/models/${modelId}`, {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${apiKey}`,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            inputs: finalPrompt,
+                            parameters: {
+                                negative_prompt: negPrompt
+                            }
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errData = await response.json().catch(() => ({}));
+                        throw new Error(errData.error || `Gagal (${response.status})`);
+                    }
+
+                    const blob = await response.blob();
+                    const imgUrl = URL.createObjectURL(blob);
+                    
+                    const img = new Image();
+                    img.crossOrigin = "Anonymous"; 
+                    img.src = imgUrl;
+
+                    img.onload = () => drawToCanvas(img, canvas, ctx, overlayText, statusEl);
+                }
+
+            } catch (error) {
+                statusEl.innerText = "Error: " + error.message;
+                console.error(error);
+            }
+        }
+
+        // Fungsi Helper untuk Menggambar ke Canvas
+        function drawToCanvas(img, canvas, ctx, overlayText, statusEl) {
+            // Sesuaikan ukuran canvas dengan rasio gambar tapi tetap dalam batas
+            const maxW = 1024;
+            const maxH = 1024;
+            let newW = img.width;
+            let newH = img.height;
+
+            if (newW > maxW || newH > maxH) {
+                const ratio = Math.min(maxW / newW, maxH / newH);
+                newW *= ratio;
+                newH *= ratio;
+            }
+
+            canvas.width = newW;
+            canvas.height = newH;
+
+            // Gambar AI
+            ctx.drawImage(img, 0, 0, newW, newH);
+
+            // Gambar Teks Overlay
+            if (overlayText) {
+                const fontSize = Math.floor(newW / 15);
+                ctx.font = `bold ${fontSize}px Arial`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "bottom";
+                
+                const x = newW / 2;
+                const y = newH - (newH * 0.05);
+
+                // Outline (Stroke)
+                ctx.lineWidth = fontSize / 8;
+                ctx.strokeStyle = "black";
+                ctx.strokeText(overlayText, x, y);
+                
+                // Fill
+                ctx.fillStyle = "white";
+                ctx.fillText(overlayText, x, y);
+            }
+
+            statusEl.innerText = "Selesai! Gambar siap diunduh.";
+        }
+
+        // --- DOWNLOAD LOGIC ---
+        function downloadCanvas() {
+            const canvas = document.getElementById('mainCanvas');
+            const link = document.createElement('a');
+            link.download = `neogen-${Date.now()}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+        }
+
+        // Initial Setup
+        window.onload = () => {
+            const ctx = document.getElementById('mainCanvas').getContext('2d');
+            ctx.fillStyle = "#111";
+            ctx.fillRect(0,0,800,600);
+            ctx.fillStyle = "#333";
+            ctx.font = "20px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("NEOGEN AI", 400, 290);
+            ctx.font = "14px Arial";
+            ctx.fillStyle = "#555";
+            ctx.fillText("Pilih mesin, tulis ide, dan klik Buat Visual", 400, 320);
+            
+            // Set default engine display
+            toggleApiInput();
+        };
+
+    </script>
+</body>
+</html>
